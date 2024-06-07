@@ -48,13 +48,11 @@ echo ""
 echo ">> grabbing launcher patches ..."
 cd "${WORK_DIR}"
 test -f 1722.diff || curl -LO https://patch-diff.githubusercontent.com/raw/kolide/launcher/pull/1722.diff
-test -f 1721.diff || curl -LO https://patch-diff.githubusercontent.com/raw/kolide/launcher/pull/1721.diff
 
 echo ""
 echo ">> patching launcher ..."
 cd launcher
 patch -p1 <../1722.diff
-patch -p1 <../1721.diff
 
 echo ""
 echo ">> building package-builder ..."
