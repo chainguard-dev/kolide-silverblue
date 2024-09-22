@@ -17,16 +17,15 @@ This script rebuilds a [Kolide](https://www.kolide.com/) RPM for deployment on F
 
 ### RPM installation instructions
 
-To install the resulting RPM on Fedora SilverBlue:
+To install the resulting RPM on Fedora SilverBlue, run:
 
 ```
-sudo rpm-ostree install </path/to/kolide-launcher.rpm>
-sudo reboot
-sudo systemctl enable launcher.kolide-k2
-sudo systemctl start launcher.kolide-k2
+rpm-ostree install </path/to/kolide-launcher.rpm>
+sudo rpm-ostree apply-live
+systemctl enable --now launcher.kolide-k2
 ```
 
-To uninstall the custom package, use:
+To uninstall the custom package, run:
 
 ```
 sudo rpm-ostree uninstall launcher-kolide-k2
