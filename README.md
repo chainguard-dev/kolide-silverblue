@@ -6,6 +6,7 @@ This script rebuilds a [Kolide](https://www.kolide.com/) RPM for deployment on F
 
 - Go v1.21 or higher to [rebuild the launcher](https://github.com/kolide/launcher/blob/main/docs/launcher.md)
 - podman or docker
+- GNU `patch`
 
 ## Usage
 
