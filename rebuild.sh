@@ -52,7 +52,10 @@ test -f 1722.diff || curl -LO https://patch-diff.githubusercontent.com/raw/kolid
 echo ""
 echo ">> patching launcher ..."
 cd launcher
-patch -p1 <../1722.diff
+patch -p1 <../1722.diff || true
+
+echo ">> patching launcher/pkg/packagekit/package.go ..."
+patch -p1 <../../pkg_packagekit_package.go.patch
 
 echo ""
 echo ">> building package-builder ..."
