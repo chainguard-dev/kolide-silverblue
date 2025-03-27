@@ -47,15 +47,12 @@ git pull
 echo ""
 echo ">> grabbing launcher patches ..."
 cd "${WORK_DIR}"
-test -f 1722.diff || curl -LO https://patch-diff.githubusercontent.com/raw/kolide/launcher/pull/1722.diff
+curl -LO https://patch-diff.githubusercontent.com/raw/kolide/launcher/pull/1722.diff
 
 echo ""
 echo ">> patching launcher ..."
 cd launcher
 patch -p1 <../1722.diff || true
-
-echo ">> patching launcher/pkg/packagekit/package.go ..."
-patch -p1 <../../pkg_packagekit_package.go.patch
 
 echo ""
 echo ">> building package-builder ..."
@@ -91,7 +88,7 @@ echo ""
 echo "To install, run:"
 echo ""
 echo "rpm-ostree install ${dest}"
-echo "sudo rpm-ostree apply-live"
+echo "sudo rpm-ostree apply-live --allow-replacement"
 echo "systemctl enable --now launcher.kolide-k2"
 echo ""
 echo "To uninstall, use:"
