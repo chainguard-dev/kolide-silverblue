@@ -18,7 +18,7 @@ These distributions are known to need further work:
 ## Requirements
 
 - Go v1.21 or higher to [rebuild the launcher](https://github.com/kolide/launcher/blob/main/docs/launcher.md)
-- podman or docker
+- Podman or Docker
 - GNU patch
 - GNU make
 - rpm2cpio (to process RPM files)
@@ -26,7 +26,7 @@ These distributions are known to need further work:
 ## Usage
 
 1. Download an officially supported Kolide Linux RPM package from a trusted source (Slack, Device Trust)
-2. Run `./rebuild.sh </path/to/rpm>
+2. Run `./rebuild.sh </path/to/rpm>`
 3. Install resulting package
 
 It's necessary to provide an official Kolide package as it contains the enrollment secret necessary for your environment.
