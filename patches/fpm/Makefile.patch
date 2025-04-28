@@ -1,0 +1,50 @@
+diff --git a/Dockerfile b/Dockerfile
+index 6111caa..05bebf2 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -10,14 +10,14 @@ ARG BASE_ENV=everything
+ ARG TARGET=test
+ 
+ # Container to throw an error if called with a bare `docker build .`
+-FROM ubuntu:20.04 as error
++FROM ubuntu:24.04 as error
+ RUN <<EOF
+   printf '\n\n\n%s\n\n\n' "Hey! Use buildkit. See the Makefile or docs"
+   false
+ EOF
+ 
+ # Base container is used for various release and test things
+-FROM ubuntu:20.04 as minimal-base
++FROM ubuntu:24.04 as minimal-base
+ ARG DEBIAN_FRONTEND=noninteractive
+ ARG TZ=Etc/UTC
+ # Runtime deps. Build deps go in the build or test containers
+diff --git a/Makefile b/Makefile
+index 0ccb8b0..1ea4332 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,6 +2,8 @@ GEMSPEC=$(shell ls *.gemspec)
+ VERSION=$(shell awk -F\" '/VERSION =/ { print $$2 }' lib/fpm/version.rb)
+ NAME=$(shell awk -F\" '/spec.name/ { print $$2 }' $(GEMSPEC))
+ GEM=$(NAME)-$(VERSION).gem
++BUILDER ?= docker
++TAG ?= fpm
+ 
+ .PHONY: test
+ test:
+@@ -62,12 +64,12 @@ release-prep:
+ # The normal make target runs said image, mounting CWD against it.
+ SECONDARY: .docker-test-minimal .docker-test-everything
+ .docker-test-%: Gemfile.lock fpm.gemspec Dockerfile
+-	DOCKER_BUILDKIT=1 docker build -t fpm-test-$*  --build-arg BASE_ENV=$* --build-arg TARGET=test .
++	DOCKER_BUILDKIT=1 $(BUILDER) build -t fpm-test-$* --build-arg BASE_ENV=$* --build-arg TARGET=test .
+ 	touch "$@"
+ 
+ docker-test-%: .docker-test-%
+-	docker run -v `pwd`:/src fpm-test-$*
++	$(BUILDER) run -v `pwd`:/src fpm-test-$*
+ 
+ docker-release-%:
+-	DOCKER_BUILDKIT=1 docker build -t fpm  --build-arg BASE_ENV=$* --build-arg TARGET=release --squash .
++	DOCKER_BUILDKIT=1 $(BUILDER) build -t $(TAG) --build-arg BASE_ENV=$* --build-arg TARGET=release --squash .
+ 

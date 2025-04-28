@@ -1,0 +1,37 @@
+diff --git a/pkg/packagekit/package_fpm.go b/pkg/packagekit/package_fpm.go
+index 346dc437..1fdba11e 100644
+--- a/pkg/packagekit/package_fpm.go
++++ b/pkg/packagekit/package_fpm.go
+@@ -136,6 +136,23 @@ func PackageFPM(ctx context.Context, w io.Writer, po *PackageOptions, fpmOpts ..
+ 		mountSuffix = ":Z"
+ 	}
+ 
++	// Loosen up the permissions for Docker on Linux
++	if err := os.Chmod(po.Root, 0o755); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(po.Scripts, 0o755); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(filepath.Join(po.Root, "/etc/kolide-k2/secret"), 0o644); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(outputPathDir, 0o777); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
+ 	args := []string{
+ 		"run", "--rm",
+ 		"-v", fmt.Sprintf("%s:/pkgsrc%s", po.Root, mountSuffix),
+@@ -145,6 +162,8 @@ func PackageFPM(ctx context.Context, w io.Writer, po *PackageOptions, fpmOpts ..
+ 		"docker.io/kolide/fpm:latest",
+ 	}
+ 
++	fmt.Printf("args: %v\n", args)
++	//time.Sleep(3600 * time.Second)
+ 	cmd := exec.CommandContext(ctx, po.ContainerTool, append(args, fpmCommand...)...) //nolint:forbidigo // Fine to use exec.CommandContext outside of launcher proper
+ 
+ 	stderr := new(bytes.Buffer)
