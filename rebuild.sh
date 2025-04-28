@@ -27,6 +27,13 @@ function check_prereqs() {
         echo "you must install podman or docker"
         exit 1
     fi
+
+    if [[ "${CONTAINER_TOOL}" == "docker" ]]; then
+        if !groups | grep -q docker; then
+           echo "you must be in the 'docker' group: run 'newgrp docker'"
+           exit 2
+        fi
+    fi
 }
 
 function extract_flags_rpm() {
@@ -136,9 +143,7 @@ function build_launcher_package() {
     echo ">> building install package with ${extra_flags} ..."
     pushd launcher
 
-    if [[ -f "out/launcher.linux-systemd-${PKG_FORMAT}.${PKG_FORMAT}" ]]; then
-        rm "out/launcher.linux-systemd-${PKG_FORMAT}.${PKG_FORMAT}"
-    fi
+    local format="${PKG_FORMAT}"
 
     ./build/package-builder make \
         --i-am-a-kolide-customer \
@@ -149,10 +154,13 @@ function build_launcher_package() {
         -transport "${FLAG_TRANSPORT}" \
         -with_initial_runner \
         -debug \
-        -targets "linux-${platform}-${init}-${PKG_FORMAT}" ${extra_flags}
+        -targets "linux-${platform}-${init}-${format}" ${extra_flags}
 
-    dest="${WORK_DIR}/$(basename ${REFERENCE_PKG})"
+    output="out/launcher.linux-${platform}-${init}-${format}.${format}"
+    dest="${WORK_DIR}/$(basename ${REFERENCE_PKG} | sed -e s/\.deb// -e s/\.rpm//).${format}"
+
     mv "out/launcher.linux-${platform}-${init}-${PKG_FORMAT}.${PKG_FORMAT}" "${dest}"
+
     ls -lad "${dest}"
 
     echo ""
@@ -175,6 +183,11 @@ function build_launcher_package() {
             echo "To install, run:"
             echo ""
             echo "rpm -ivh ${dest}"
+        ;;
+        debian|ubuntu|vanilla)
+            echo "To install, run:"
+            echo ""
+            echo "dpkg -i ${dest}"
         ;;
     esac
 }

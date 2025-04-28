@@ -11,6 +11,7 @@ Linux Environments such as:
 - Go v1.21 or higher to [rebuild the launcher](https://github.com/kolide/launcher/blob/main/docs/launcher.md)
 - podman or docker
 - GNU `patch`
+- rpm2cpio (to process RPM files)
 
 ## Usage
 
