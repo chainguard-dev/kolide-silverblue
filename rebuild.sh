@@ -182,12 +182,12 @@ function build_launcher_package() {
         fedora)
             echo "To install, run:"
             echo ""
-            echo "rpm -ivh ${dest}"
+            echo "sudo rpm -ivh ${dest}"
         ;;
         debian|ubuntu|vanilla)
             echo "To install, run:"
             echo ""
-            echo "dpkg -i ${dest}"
+            echo "sudo dpkg -i ${dest}"
         ;;
     esac
 }

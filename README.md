@@ -15,8 +15,8 @@ Linux Environments such as:
 
 ## Usage
 
-1. Download an officially supported Kolide Linux package from a trusted source (Slack, Device Trust)
-2. Run `./rebuild.sh </path/to/pkg>
+1. Download an officially supported Kolide Linux RPM package from a trusted source (Slack, Device Trust)
+2. Run `./rebuild.sh </path/to/rpm>
 3. Install resulting package
 
 It's necessary to provide an official Kolide package as it contains the enrollment secret necessary for your environment.
