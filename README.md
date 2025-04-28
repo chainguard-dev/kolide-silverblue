@@ -1,16 +1,26 @@
 # Kolide for Exotic Linux Environments
 
-This script rebuilds [Kolide](https://www.kolide.com/) Linux packages for deployment within Exotic
-Linux Environments such as:
+This script rebuilds [Kolide](https://www.kolide.com/) Linux packages for deployment within Exotic Linux Environments such as:
 
-* Anything on arm64
-* Fedora SilverBlue
+* arm64 (deb, rpm, apk, pacman)
+* Fedora SilverBlue & Bluefin (rpm)
+
+The following distributions will likely work, but are untested:
+
+* Bazzite (rpm)
+* VanillaOS (rpm)
+* Wolfi (apk)
+
+These distributions are known to need further work:
+
+* Alpine Linux (apk) - fails due to osqueryd glibc dependency (_nl_msg_cat_cntr): symbol not found
 
 ## Requirements
 
 - Go v1.21 or higher to [rebuild the launcher](https://github.com/kolide/launcher/blob/main/docs/launcher.md)
 - podman or docker
-- GNU `patch`
+- GNU patch
+- GNU make
 - rpm2cpio (to process RPM files)
 
 ## Usage

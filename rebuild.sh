@@ -13,26 +13,43 @@ if [[ $# != 1 ]]; then
 fi
 
 function check_prereqs() {
+    missing=0
     if ! go version >/dev/null; then
-        echo "you must first install go ..."
-        exit 1
+        echo "* go command missing"
+        missing=1
     fi
 
     if ! patch -v >/dev/null; then
-        echo "you must install patch ..."
-        exit 1
+        echo "* patch command missing"
+        missing=1
+    fi
+
+    if ! make -v >/dev/null; then
+        echo "* make command missing"
+        missing=1
+    fi
+
+
+    if ! type -P rpm2cpio >/dev/null; then
+        echo "* rpm2cpio command missing"
+        missing=1
     fi
 
     if ! ${CONTAINER_TOOL} -v >/dev/null; then
-        echo "you must install podman or docker"
-        exit 1
+        echo "* container build tool (podman, docker) missing"
+        missing=1
     fi
 
     if [[ "${CONTAINER_TOOL}" == "docker" ]]; then
         if !groups | grep -q docker; then
            echo "you must be in the 'docker' group: run 'newgrp docker'"
-           exit 2
+           missing=1
         fi
+    fi
+
+    if [[ "${missing}" == 1 ]]; then
+        echo "** Please address missing requirements **"
+        exit 2
     fi
 }
 
@@ -86,7 +103,7 @@ function build_package_builder() {
 
     echo ""
     echo ">> building package-builder ..."
-    make package-builder
+    env GOTOOLCHAIN=auto make package-builder
     popd
 }
 
@@ -214,8 +231,10 @@ if type -P apt-get >/dev/null; then
     readonly PKG_FORMAT="deb"
 elif type -P pacman 2>/dev/null; then
     readonly PKG_FORMAT="pacman"
-else
+elif type -P rpm 2>/dev/null; then
     readonly PKG_FORMAT="rpm"
+elif type -P apk 2>/dev/null; then
+    readonly PKG_FORMAT="apk"
 fi
 
 mkdir -p "${WORK_DIR}"

@@ -7,7 +7,7 @@ index 346dc437..9592a4c4 100644
  	outputFilename := fmt.Sprintf("%s-%s.%s", po.Name, po.Version, f.outputType)
  
 +	if f.arch == "arm64" {
-+		if f.outputType == "rpm" || f.outputType == "deb" || f.outputType == "pacman" {
++		if f.outputType == "rpm" || f.outputType == "deb" || f.outputType == "pacman" || f.outputType == "apk" {
 +			f.arch = "aarch64"
 +		}
 +	}
