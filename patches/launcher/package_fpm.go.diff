@@ -1,0 +1,16 @@
+diff --git a/pkg/packagekit/package_fpm.go b/pkg/packagekit/package_fpm.go
+index 346dc437..9592a4c4 100644
+--- a/pkg/packagekit/package_fpm.go
++++ b/pkg/packagekit/package_fpm.go
+@@ -94,6 +94,11 @@ func PackageFPM(ctx context.Context, w io.Writer, po *PackageOptions, fpmOpts ..
+ 
+ 	outputFilename := fmt.Sprintf("%s-%s.%s", po.Name, po.Version, f.outputType)
+ 
++	if f.arch == "arm64" {
++		if f.outputType == "rpm" || f.outputType == "deb" || f.outputType == "pacman" {
++			f.arch = "aarch64"
++		}
++	}
+ 	outputPathDir, err := os.MkdirTemp("", "packaging-fpm-output")
+ 	if err != nil {
+ 		return fmt.Errorf("making TempDir: %w", err)

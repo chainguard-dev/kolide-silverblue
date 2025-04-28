@@ -1,6 +1,10 @@
-# kolide-silverblue
+# Kolide for Exotic Linux Environments
 
-This script rebuilds a [Kolide](https://www.kolide.com/) RPM for deployment on Fedora Silverblue.
+This script rebuilds [Kolide](https://www.kolide.com/) Linux packages for deployment within Exotic
+Linux Environments such as:
+
+* Anything on arm64
+* Fedora SilverBlue
 
 ## Requirements
 
@@ -10,41 +14,8 @@ This script rebuilds a [Kolide](https://www.kolide.com/) RPM for deployment on F
 
 ## Usage
 
-1. Talk to the @Kolide Slack bot to
-1. "Enroll a Device" via the @Kolide Slack bot, selecting the `RPM Linux (.rpm)` installation package.
-2. Download the RPM file that @Kolide sends via Slack
-2. Run `./rebuild.sh <path to downloaded RPM>`
-3. Get coffee while the script runs
+1. Download an officially supported Kolide Linux package from a trusted source (Slack, Device Trust)
+2. Run `./rebuild.sh </path/to/pkg>
+3. Install resulting package
 
-### RPM installation instructions
-
-To install the resulting RPM on Fedora SilverBlue, run:
-
-```
-rpm-ostree install </path/to/kolide-launcher.rpm>
-sudo rpm-ostree apply-live
-systemctl enable --now launcher.kolide-k2
-```
-
-To uninstall the custom package, run:
-
-```
-sudo rpm-ostree uninstall launcher-kolide-k2
-```
-
-## How it works
-
-This script automates the following steps:
-
-1. Checks out https://github.com/kolide/launcher
-2. Patches launcher with:
-  - https://github.com/kolide/launcher/pull/1721
-  - https://github.com/kolide/launcher/pull/1722
-3. Extracts configuration details from the RPM you provided
-4. Builds a new RPM
-
-## Caveats
-
-Autoupdates are not enabled, as this may result in Kolide sending you an incompatible launcher in the future. Hopefully Kolide will natively support Fedora SilverBlue soon so that this hack is unnecessary in the near future.
-
-Be sure to mention to Kolide's support team that you would like native support for immutable Linux distrubitons such as Fedora SilverBlue!
+It's necessary to provide an official Kolide package as it contains the enrollment secret necessary for your environment.
