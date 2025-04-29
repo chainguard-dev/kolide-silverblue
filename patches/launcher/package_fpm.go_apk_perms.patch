@@ -1,0 +1,63 @@
+diff --git a/pkg/packagekit/package_fpm.go b/pkg/packagekit/package_fpm.go
+index 346dc437..7988cfcb 100644
+--- a/pkg/packagekit/package_fpm.go
++++ b/pkg/packagekit/package_fpm.go
+@@ -19,6 +19,7 @@ import (
+ type outputType string
+ 
+ const (
++	Apk    outputType = "apk"
+ 	Deb    outputType = "deb"
+ 	RPM    outputType = "rpm"
+ 	Tar    outputType = "tar"
+@@ -39,6 +40,12 @@ func AsRPM() FpmOpt {
+ 	}
+ }
+ 
++func AsApk() FpmOpt {
++	return func(f *fpmOptions) {
++		f.outputType = Apk
++	}
++}
++
+ func AsDeb() FpmOpt {
+ 	return func(f *fpmOptions) {
+ 		f.outputType = Deb
+@@ -94,6 +101,13 @@ func PackageFPM(ctx context.Context, w io.Writer, po *PackageOptions, fpmOpts ..
+ 
+ 	outputFilename := fmt.Sprintf("%s-%s.%s", po.Name, po.Version, f.outputType)
+ 
++	if f.arch == "arm64" {
++		// if it's Linux, use it's native arch naming convention to avoid package install failures
++		if f.outputType == "rpm" || f.outputType == "deb" || f.outputType == "pacman" || f.outputType == "apk" {
++			f.arch = "aarch64"
++		}
++	}
++
+ 	outputPathDir, err := os.MkdirTemp("", "packaging-fpm-output")
+ 	if err != nil {
+ 		return fmt.Errorf("making TempDir: %w", err)
+@@ -136,6 +150,23 @@ func PackageFPM(ctx context.Context, w io.Writer, po *PackageOptions, fpmOpts ..
+ 		mountSuffix = ":Z"
+ 	}
+ 
++	// Loosen up the permissions for Docker on Linux
++	if err := os.Chmod(po.Root, 0o755); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(po.Scripts, 0o755); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(filepath.Join(po.Root, "/etc/kolide-k2/secret"), 0o644); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
++	if err := os.Chmod(outputPathDir, 0o777); err != nil {
++		return fmt.Errorf("chmod: %w", err)
++	}
++
+ 	args := []string{
+ 		"run", "--rm",
+ 		"-v", fmt.Sprintf("%s:/pkgsrc%s", po.Root, mountSuffix),
