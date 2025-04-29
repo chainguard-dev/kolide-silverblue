@@ -178,11 +178,10 @@ function build_launcher_package() {
 		-debug \
 		-targets "${target}" ${extra_flags}
 
-	output="out/launcher.${target}.${format}"
-	dest="${WORK_DIR}/$(basename ${REFERENCE_PKG} | sed -e s/\.deb// -e s/\.rpm//).${format}"
+	output=$(echo "out/launcher.${target}.${format}" | sed -e s/-amd64//)
+	dest="${WORK_DIR}/$(basename ${REFERENCE_PKG} | sed -e s/\.rpm//).${format}"
 
-	mv "out/launcher.${target}.${PKG_FORMAT}" "${dest}"
-
+	mv "${output}" "${dest}"
 	ls -lad "${dest}"
 
 	echo ""
@@ -190,7 +189,7 @@ function build_launcher_package() {
 	echo ""
 
 	case "${DISTRO}" in
-	silverblue | bazzite | ublue)
+	silverblue | bazzite | bluefin)
 		echo "To install, run:"
 		echo ""
 		echo "rpm-ostree install ${dest}"
