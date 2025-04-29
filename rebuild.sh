@@ -29,12 +29,10 @@ function check_prereqs() {
         missing=1
     fi
 
-
     if ! type -P git >/dev/null; then
         echo "- git command missing"
         missing=1
     fi
-
 
     if ! type -P rpm2cpio >/dev/null; then
         echo "- rpm2cpio command missing"
@@ -46,8 +44,8 @@ function check_prereqs() {
         missing=1
     elif [[ "${CONTAINER_TOOL}" == "docker" ]]; then
         if ! groups | grep -q docker; then
-           echo "- user must be in the 'docker' group: run 'newgrp docker'"
-           missing=1
+            echo "- user must be in the 'docker' group: run 'newgrp docker'"
+            missing=1
         fi
     fi
 
@@ -166,6 +164,8 @@ function build_launcher_package() {
     pushd launcher
 
     local format="${PKG_FORMAT}"
+    local target="linux-${platform}-${init}-${format}"
+    echo ">> target: ${target}"
 
     ./build/package-builder make \
         --i-am-a-kolide-customer \
@@ -176,12 +176,12 @@ function build_launcher_package() {
         -transport "${FLAG_TRANSPORT}" \
         -with_initial_runner \
         -debug \
-        -targets "linux-${platform}-${init}-${format}" ${extra_flags}
+        -targets "${target}" ${extra_flags}
 
-    output="out/launcher.linux-${platform}-${init}-${format}.${format}"
+    output="out/launcher.${target}.${format}"
     dest="${WORK_DIR}/$(basename ${REFERENCE_PKG} | sed -e s/\.deb// -e s/\.rpm//).${format}"
 
-    mv "out/launcher.linux-${platform}-${init}-${PKG_FORMAT}.${PKG_FORMAT}" "${dest}"
+    mv "out/launcher.${target}.${PKG_FORMAT}" "${dest}"
 
     ls -lad "${dest}"
 
@@ -190,26 +190,26 @@ function build_launcher_package() {
     echo ""
 
     case "${DISTRO}" in
-        silverblue|bazzite|ublue)
-            echo "To install, run:"
-            echo ""
-            echo "rpm-ostree install ${dest}"
-            echo "sudo rpm-ostree apply-live --allow-replacement"
-            echo "systemctl enable --now launcher.kolide-k2"
-            echo ""
-            echo "To uninstall, use:"
-            echo ""
-            echo "sudo rpm-ostree uninstall launcher-kolide-k2"
+    silverblue | bazzite | ublue)
+        echo "To install, run:"
+        echo ""
+        echo "rpm-ostree install ${dest}"
+        echo "sudo rpm-ostree apply-live --allow-replacement"
+        echo "systemctl enable --now launcher.kolide-k2"
+        echo ""
+        echo "To uninstall, use:"
+        echo ""
+        echo "sudo rpm-ostree uninstall launcher-kolide-k2"
         ;;
-        fedora|rocky|"red hat")
-            echo "To install, run:"
-            echo ""
-            echo "sudo rpm -ivh ${dest}"
+    fedora | rocky | "red hat")
+        echo "To install, run:"
+        echo ""
+        echo "sudo rpm -ivh ${dest}"
         ;;
-        debian|ubuntu|vanillaos)
-            echo "To install, run:"
-            echo ""
-            echo "sudo dpkg -i ${dest}"
+    debian | ubuntu | vanillaos)
+        echo "To install, run:"
+        echo ""
+        echo "sudo dpkg -i ${dest}"
         ;;
     esac
 }
@@ -224,7 +224,7 @@ fi
 readonly SRC_DIR="$(dirname $(realpath $0))"
 readonly REFERENCE_PKG="$(realpath "$1")"
 readonly WORK_DIR=/tmp/rebuild_$(basename ${REFERENCE_PKG})
-readonly DISTRO=$(awk '/^ID=/' /etc/*-release | awk -F'=' '{ print tolower($2) }')
+readonly DISTRO=$(awk '/^ID=/' /etc/*-release | awk -F'=' '{ print tolower($2) }' | sed s/\"//g)
 readonly ARCH=$(uname -m)
 if type -P podman >/dev/null; then
     readonly CONTAINER_TOOL="podman"
@@ -242,6 +242,14 @@ elif type -P apk >/dev/null; then
     readonly PKG_FORMAT="apk"
 fi
 
+echo "#######################################################"
+echo "## Kolide ELE (Exotic Linux Environment), building for:"
+echo "##   DISTRO:         ${DISTRO}"
+echo "##   ARCH:           ${ARCH}"
+echo "##   FORMAT:         ${PKG_FORMAT}"
+echo "##   CONTAINER TOOL: ${CONTAINER_TOOL}"
+echo "#######################################################"
+echo ""
 mkdir -p "${WORK_DIR}"
 cd "${WORK_DIR}"
 check_prereqs

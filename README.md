@@ -4,12 +4,12 @@ This script rebuilds [Kolide](https://www.kolide.com/) Linux packages for deploy
 
 * arm64 (deb, rpm, apk, pacman)
 * Fedora SilverBlue & Bluefin (rpm)
+* Chainguard OS, Wolfi (apk)
 
 The following distributions will likely work, but are untested:
 
 * Bazzite (rpm)
-* VanillaOS (rpm)
-* Wolfi (apk)
+* VanillaOS (deb)
 
 These environments are known to need further work:
 
