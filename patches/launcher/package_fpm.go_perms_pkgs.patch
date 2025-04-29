@@ -26,35 +26,3 @@ index 346dc437..f14c8596 100644
  	args := []string{
  		"run", "--rm",
  		"-v", fmt.Sprintf("%s:/pkgsrc%s", po.Root, mountSuffix),
-diff --git a/pkg/packaging/target.go b/pkg/packaging/target.go
-index bb9dfdad..fd5df1bf 100644
---- a/pkg/packaging/target.go
-+++ b/pkg/packaging/target.go
-@@ -48,15 +48,17 @@ const (
- 	Rpm    PackageFlavor = "rpm"
- 	Msi    PackageFlavor = "msi"
- 	Pacman PackageFlavor = "pacman"
-+	Apk    PackageFlavor = "apk"
- )
- 
--var knownPackageFlavors = [...]PackageFlavor{Pkg, Tar, Deb, Rpm, Msi, Pacman}
-+var knownPackageFlavors = [...]PackageFlavor{Pkg, Tar, Deb, Rpm, Msi, Pacman, Apk}
- 
- type ArchFlavor string
- 
- const (
- 	Arm64     ArchFlavor = "arm64"
- 	Amd64     ArchFlavor = "amd64"
-+	Riscv64   ArchFlavor = "riscv64"
- 	Universal ArchFlavor = "universal" // Darwin only
- )
- 
-@@ -66,7 +68,7 @@ var defaultArchMap = map[PlatformFlavor]ArchFlavor{
- 	Linux:   Amd64,
- }
- 
--var knownArchFlavors = [...]ArchFlavor{Arm64, Amd64, Universal}
-+var knownArchFlavors = [...]ArchFlavor{Arm64, Amd64, Riscv64, Universal}
- 
- // Parse parses a string in the form platform-init-package and sets the target accordingly.
- func (t *Target) Parse(s string) error {

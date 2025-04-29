@@ -14,41 +14,46 @@ fi
 
 function check_prereqs() {
     missing=0
-    if ! go version >/dev/null; then
-        echo "* go command missing"
+    if ! type -P go >/dev/null; then
+        echo "- go command missing"
         missing=1
     fi
 
-    if ! patch -v >/dev/null; then
-        echo "* patch command missing"
+    if ! type -P patch >/dev/null; then
+        echo "- patch command missing"
         missing=1
     fi
 
-    if ! make -v >/dev/null; then
-        echo "* make command missing"
+    if ! type -P make >/dev/null; then
+        echo "- make command missing"
+        missing=1
+    fi
+
+
+    if ! type -P git >/dev/null; then
+        echo "- git command missing"
         missing=1
     fi
 
 
     if ! type -P rpm2cpio >/dev/null; then
-        echo "* rpm2cpio command missing"
+        echo "- rpm2cpio command missing"
         missing=1
     fi
 
-    if ! ${CONTAINER_TOOL} -v >/dev/null; then
-        echo "* container build tool (podman, docker) missing"
+    if ! type -P ${CONTAINER_TOOL} >/dev/null; then
+        echo "- container build tool (podman, docker) missing"
         missing=1
-    fi
-
-    if [[ "${CONTAINER_TOOL}" == "docker" ]]; then
-        if !groups | grep -q docker; then
-           echo "you must be in the 'docker' group: run 'newgrp docker'"
+    elif [[ "${CONTAINER_TOOL}" == "docker" ]]; then
+        if ! groups | grep -q docker; then
+           echo "- user must be in the 'docker' group: run 'newgrp docker'"
            missing=1
         fi
     fi
 
     if [[ "${missing}" == 1 ]]; then
-        echo "** Please address missing requirements **"
+        echo ""
+        echo "*** exiting due to unmet dependencies"
         exit 2
     fi
 }
@@ -185,7 +190,7 @@ function build_launcher_package() {
     echo ""
 
     case "${DISTRO}" in
-        silverblue)
+        silverblue|bazzite|ublue)
             echo "To install, run:"
             echo ""
             echo "rpm-ostree install ${dest}"
@@ -196,12 +201,12 @@ function build_launcher_package() {
             echo ""
             echo "sudo rpm-ostree uninstall launcher-kolide-k2"
         ;;
-        fedora)
+        fedora|rocky|"red hat")
             echo "To install, run:"
             echo ""
             echo "sudo rpm -ivh ${dest}"
         ;;
-        debian|ubuntu|vanilla)
+        debian|ubuntu|vanillaos)
             echo "To install, run:"
             echo ""
             echo "sudo dpkg -i ${dest}"
@@ -229,11 +234,11 @@ fi
 
 if type -P apt-get >/dev/null; then
     readonly PKG_FORMAT="deb"
-elif type -P pacman 2>/dev/null; then
+elif type -P pacman >/dev/null; then
     readonly PKG_FORMAT="pacman"
-elif type -P rpm 2>/dev/null; then
+elif type -P rpm >/dev/null; then
     readonly PKG_FORMAT="rpm"
-elif type -P apk 2>/dev/null; then
+elif type -P apk >/dev/null; then
     readonly PKG_FORMAT="apk"
 fi
 
