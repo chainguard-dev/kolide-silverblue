@@ -11,9 +11,10 @@ The following distributions will likely work, but are untested:
 * VanillaOS (rpm)
 * Wolfi (apk)
 
-These distributions are known to need further work:
+These environments are known to need further work:
 
 * Alpine Linux (apk) - fails due to osqueryd glibc dependency (_nl_msg_cat_cntr): symbol not found
+* RISC-V -
 
 ## Requirements
 
