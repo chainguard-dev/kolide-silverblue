@@ -1,0 +1,19 @@
+diff --git a/pkg/make/builder.go b/pkg/make/builder.go
+index ffac2942..b1bc5d3f 100644
+--- a/pkg/make/builder.go
++++ b/pkg/make/builder.go
+@@ -218,9 +218,12 @@ func (b *Builder) goVersionCompatible(logger log.Logger) error {
+ 		return nil
+ 	}
+ 
+-	goVer, err := semver.NewVersion(b.goVer)
++	// parse values such as "1.23.6 (Red Hat 1.23.6-2.el9_5)"
++	cutVer, _, _ := strings.Cut(b.goVer, " ")
++
++	goVer, err := semver.NewVersion(cutVer)
+ 	if err != nil {
+-		return fmt.Errorf("parse go version %q as semver: %w", b.goVer, err)
++		return fmt.Errorf("parse go version %q as semver: %w", cutVer, err)
+ 	}
+ 
+ 	goConstraint := ">= 1.11"
