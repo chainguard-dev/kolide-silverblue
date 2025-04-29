@@ -210,6 +210,11 @@ function build_launcher_package() {
 		echo ""
 		echo "sudo dpkg -i ${dest}"
 		;;
+	chainguard)
+		echo "To install, run:"
+		echo ""
+		echo " sudo apk add --allow-untrusted ${dest}"
+		;;
 	esac
 }
 

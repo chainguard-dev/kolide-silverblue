@@ -1,5 +1,5 @@
 diff --git a/pkg/packaging/packaging.go b/pkg/packaging/packaging.go
-index c4d0a4a5..041f7543 100644
+index c4d0a4a5..2545b4b6 100644
 --- a/pkg/packaging/packaging.go
 +++ b/pkg/packaging/packaging.go
 @@ -423,6 +423,11 @@ func (p *PackageOptions) makePackage(ctx context.Context) error {
@@ -14,3 +14,14 @@ index c4d0a4a5..041f7543 100644
  	case p.target.Package == Deb:
  		if err := packagekit.PackageFPM(ctx, p.packageWriter, p.packagekitops, packagekit.AsDeb(), packagekit.WithReplaces(oldPackageNames), packagekit.WithArch(string(p.target.Arch))); err != nil {
  			return fmt.Errorf("packaging, target %s: %w", p.target.String(), err)
+@@ -564,6 +569,10 @@ func (p *PackageOptions) setupInit(ctx context.Context) error {
+ 		if p.target.Package == Pacman {
+ 			dir = "/usr/lib/systemd/system"
+ 		}
++		if p.target.Package == Apk {
++			dir = "/usr/lib/systemd/system"
++		}
++
+ 		file = fmt.Sprintf("launcher.%s.service", p.Identifier)
+ 		renderFunc = packagekit.RenderSystemd
+ 	case p.target.Platform == Linux && p.target.Init == Upstart:
