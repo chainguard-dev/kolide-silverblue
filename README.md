@@ -3,18 +3,32 @@
 This script rebuilds [Kolide](https://www.kolide.com/) Linux packages for deployment within Exotic Linux Environments such as:
 
 * arm64 (deb, rpm, apk, pacman)
-* Fedora SilverBlue & Bluefin (rpm)
-* Chainguard OS, Wolfi (apk)
+* Fedora Universal Blue [SilverBlue, Bluefin, etc] (rpm)
+* Chainguard OS, Wolfi [apk]
 
-The following distributions will likely work, but are untested:
+This tool works by:
 
-* Bazzite (rpm)
-* VanillaOS (deb)
+* Extracting the per-user and domain configuration out of `/etc/kolide-k2/secrets` held within the Kolide-generated RPM
+* Patches Kolide and its dependencies to support alternative Linux environments.
+* Builds a fresh Kolide launcher package just for you
 
-These environments are known to need further work:
+## Usage
 
-* Alpine Linux (apk) - fails due to osqueryd glibc dependency (_nl_msg_cat_cntr): symbol not found
-* RISC-V -
+### Kolide on Slack
+
+1. Contact the @Kolide bot on Slack
+2. Click `Enroll your device`
+3. For the `Choose an installation package` dialog, select `Linux (rpm)`
+4. Download the RPM that the Kolide bot generates for you.
+5. Run `./rebuild.sh /path/to/downloaded.rpm`
+6. Follow the instructions to install the resulting rebuilt package
+
+### Kolide Device Trust
+
+1. Login to a website protected by Kolide Device Trust
+3. When prompted to "Install Kolide to complete verification", click `CentOS (kolide.rpm)`
+5. Run `./rebuild.sh /path/to/downloaded.rpm`
+6. Follow the instructions to install the resulting rebuilt package
 
 ## Requirements
 
@@ -24,10 +38,7 @@ These environments are known to need further work:
 - GNU make
 - rpm2cpio (to process RPM files)
 
-## Usage
+## Future work
 
-1. Download an officially supported Kolide Linux RPM package from a trusted source (Slack, Device Trust)
-2. Run `./rebuild.sh </path/to/rpm>`
-3. Install resulting package
-
-It's necessary to provide an official Kolide package as it contains the enrollment secret necessary for your environment.
+- Upstreaming all patches
+- Cloud Run application to streamline the conversion process
