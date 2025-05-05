@@ -144,9 +144,11 @@ function build_fpm() {
 
 function build_launcher_package() {
 	local extra_flags=" -container_tool=${CONTAINER_TOOL}"
-	if [[ "${DISTRO}" == "silverblue" ]]; then
+	case "${DISTRO}" in
+	silverblue | bazzite | bluefin)
 		extra_flags="${extra_flags} -bin_root_dir=/opt"
-	fi
+		;;
+	esac
 
 	local init="systemd"
 
